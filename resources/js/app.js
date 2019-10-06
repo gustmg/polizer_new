@@ -6,7 +6,9 @@
 
 require('./bootstrap');
 
+
 window.Vue = require('vue');
+window.mdc = require('material-components-web/dist/material-components-web');
 
 /**
  * The following block of code may be used to automatically register your
@@ -19,7 +21,19 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.prototype.$eventBus = new Vue();
+
+Vue.component('navbar-component', require('./components/NavbarComponent.vue').default);
+Vue.component('drawer-component', require('./components/DrawerComponent.vue').default);
+Vue.component('company-framework-dialog-component', require('./components/CompanyFrameworkDialogComponent.vue').default);
+
+//Companies
+Vue.component('new-company-button-component', require('./components/companies/NewCompanyButtonComponent.vue').default);
+Vue.component('new-company-dialog-component', require('./components/companies/NewCompanyDialogComponent.vue').default);
+Vue.component('delete-company-dialog-component', require('./components/companies/DeleteCompanyDialogComponent.vue').default);
+Vue.component('update-company-dialog-component', require('./components/companies/UpdateCompanyDialogComponent.vue').default);
+Vue.component('companies-list-component', require('./components/companies/CompaniesListComponent.vue').default);
+Vue.component('companies-searchbar-component', require('./components/companies/CompaniesSearchbarComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

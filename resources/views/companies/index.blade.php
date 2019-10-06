@@ -1,0 +1,9 @@
+@extends('layouts.app')
+@section('content')
+    <companies-searchbar-component></companies-searchbar-component>
+    <companies-list-component></companies-list-component>
+    <new-company-button-component></new-company-button-component>
+    <new-company-dialog-component></new-company-dialog-component>
+    <delete-company-dialog-component></delete-company-dialog-component>
+    <update-company-dialog-component></update-company-dialog-component>
+@endsection

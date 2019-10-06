@@ -18,3 +18,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
+
+//Rutas para objetos de datos
+Route::resource('companies', 'CompanyController')->middleware('auth');
+Route::resource('workspace', 'WorkspaceController')->middleware('auth');
+Route::resource('providers', 'ProviderController')->middleware('auth');
+Route::resource('clients', 'ClientController')->middleware('auth');
+Route::resource('bank_accounts', 'BankAccountController')->middleware('auth');
+Route::resource('accounting_accounts', 'AccountingAccountController')->middleware('auth');
