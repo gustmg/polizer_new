@@ -25,7 +25,7 @@ Vue.prototype.$eventBus = new Vue();
 
 Vue.component('navbar-component', require('./components/NavbarComponent.vue').default);
 Vue.component('drawer-component', require('./components/DrawerComponent.vue').default);
-Vue.component('company-framework-dialog-component', require('./components/CompanyFrameworkDialogComponent.vue').default);
+Vue.component('company-workspace-dialog-component', require('./components/CompanyWorkspaceDialogComponent.vue').default);
 
 //Companies
 Vue.component('new-company-button-component', require('./components/companies/NewCompanyButtonComponent.vue').default);

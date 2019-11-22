@@ -13,7 +13,7 @@
     <div id="app">
         <drawer-component></drawer-component>
         <navbar-component :companies_number="{{$companies->count()}}"></navbar-component>
-        <company-framework-dialog-component :companies="{{$companies}}"></company-framework-dialog-component>
+        <company-workspace-dialog-component></company-workspace-dialog-component>
         <main class="mdc-top-app-bar--fixed-adjust">
             @yield('content')
         </main>

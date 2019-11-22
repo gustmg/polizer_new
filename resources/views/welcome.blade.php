@@ -85,6 +85,20 @@
                 <div class="title m-b-md mdc-theme--primary">
                     polizer
                 </div>
+                @if($errors->any())
+                    <div id="error-snackbar" class="mdc-snackbar" data-mdc-auto-init="MDCSnackbar">
+                        <div class="mdc-snackbar__surface">
+                            <div class="mdc-snackbar__label"
+                                role="status"
+                                aria-live="polite">
+                                {{$errors->first()}}
+                            </div>
+                            <div class="mdc-snackbar__actions">
+                                <button type="button" class="mdc-button mdc-snackbar__action">Entendido</button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 
                 <div id="login-dialog" class="mdc-dialog"
                     role="alertdialog"
@@ -236,10 +250,12 @@
             window.mdc.autoInit();
             var login_dialog=document.getElementById("login-dialog");
             var register_dialog=document.getElementById("register-dialog");
+            var error_snackbar=document.getElementById("error-snackbar");
             login_dialog.MDCDialog.escapeKeyAction="";
             register_dialog.MDCDialog.escapeKeyAction="";
             login_dialog.MDCDialog.scrimClickAction="";
             register_dialog.MDCDialog.scrimClickAction="";
+            error_snackbar.MDCSnackbar.open();
 
             login_dialog.MDCDialog.listen('MDCDialog:opening', function(){
                 removeLoginValidations();

@@ -5076,15 +5076,16 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js&":
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js&":
 /*!******************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js& ***!
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js& ***!
   \******************************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event-bus */ "./resources/js/event-bus.js");
 //
 //
 //
@@ -5134,37 +5135,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
-    console.log("Company framework dialog mounted"); // console.log(this.companies);
+    console.log("Company workspace dialog mounted");
   },
-  props: {
-    companies: Array
+  data: function data() {
+    return {
+      companies: []
+    };
+  },
+  created: function created() {
+    var _this = this;
+
+    _event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$on('get-companies', function (data) {
+      _this.companies = data;
+    });
   }
 });
 
@@ -5269,6 +5255,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _material_top_app_bar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @material/top-app-bar */ "./node_modules/@material/top-app-bar/index.js");
 /* harmony import */ var _material_drawer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @material/drawer */ "./node_modules/@material/drawer/index.js");
+/* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../event-bus */ "./resources/js/event-bus.js");
 //
 //
 //
@@ -5283,26 +5270,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
+    var _this = this;
+
     console.log('Drawer component mounted.');
     var drawer = new mdc.drawer.MDCDrawer(document.querySelector('.mdc-drawer'));
     var topAppBar = mdc.topAppBar.MDCTopAppBar.attachTo(document.getElementById('app-bar'));
     topAppBar.listen('MDCTopAppBar:nav', function () {
       drawer.open = !drawer.open;
+    }); //TODO: Checkout session retrieve
+
+    axios.get('http://localhost:8000/company_workspace').then(function (response) {
+      return _this.company_workspace = response.data.company_workspace;
+    })["catch"](function (error) {
+      console.log(error);
     });
   },
   props: {
     companies_number: Number
   },
+  data: function data() {
+    return {
+      company_workspace: null
+    };
+  },
   methods: {
-    openCompanyFrameworkDialog: function openCompanyFrameworkDialog() {
-      var company_framework_dialog = document.getElementById("company-framework-dialog");
-      company_framework_dialog.MDCDialog.escapeKeyAction = "";
-      company_framework_dialog.MDCDialog.scrimClickAction = "";
-      company_framework_dialog.MDCDialog.open();
+    openCompanyWorkspaceDialog: function openCompanyWorkspaceDialog() {
+      var company_workspace_dialog = document.getElementById("company-workspace-dialog");
+      company_workspace_dialog.MDCDialog.escapeKeyAction = "";
+      company_workspace_dialog.MDCDialog.scrimClickAction = "";
+      axios.get('http://localhost:8000/companies').then(function (response) {
+        _event_bus__WEBPACK_IMPORTED_MODULE_2__["default"].$emit('get-companies', response.data.companies);
+        company_workspace_dialog.MDCDialog.open();
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   }
 });
@@ -5364,7 +5370,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      companies: []
+      companies: [],
+      search: ''
     };
   },
   created: function created() {
@@ -5391,6 +5398,9 @@ __webpack_require__.r(__webpack_exports__);
     _event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$on('delete-company', function (data) {
       _this2.companies.splice(_this2.companies.indexOf(data), 1);
     });
+    _event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$on('search-company', function (data) {
+      _this2.search = data;
+    });
   },
   methods: {
     openDeleteCompanyDialog: function openDeleteCompanyDialog(company) {
@@ -5398,6 +5408,15 @@ __webpack_require__.r(__webpack_exports__);
     },
     openUpdateCompanyDialog: function openUpdateCompanyDialog(company) {
       _event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('open-update-company-dialog', company);
+    }
+  },
+  computed: {
+    filteredCompanies: function filteredCompanies() {
+      var _this3 = this;
+
+      return this.companies.filter(function (company) {
+        return company.company_name.toLowerCase().indexOf(_this3.search.toLowerCase()) >= 0;
+      });
     }
   }
 });
@@ -5413,6 +5432,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../event-bus */ "./resources/js/event-bus.js");
 //
 //
 //
@@ -5432,6 +5452,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     companies: Array
@@ -5440,6 +5461,11 @@ __webpack_require__.r(__webpack_exports__);
     return {
       componentKey: 0
     };
+  },
+  methods: {
+    searchCompany: function searchCompany(search) {
+      _event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('search-company', search);
+    }
   }
 });
 
@@ -10560,6 +10586,25 @@ __webpack_require__.r(__webpack_exports__);
 
 }));
 //# sourceMappingURL=bootstrap.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.large-icon{\n    font-size:48px !important;\n}\n.dialog-title{\n    margin-top:0 !important;\n    margin-bottom:0 !important;\n}\n.padding-left-24{\n    padding-left:8px !important;\n}\n.companies-list{\n    max-height: 350px;\n    overflow-y: auto;\n}\n", ""]);
+
+// exports
 
 
 /***/ }),
@@ -56971,6 +57016,36 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DrawerComponent.vue?vue&type=style&index=0&lang=css&":
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DrawerComponent.vue?vue&type=style&index=0&lang=css& ***!
@@ -58128,9 +58203,9 @@ function __importDefault(mod) {
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9&":
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c&":
 /*!**********************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9& ***!
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c& ***!
   \**********************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -58146,10 +58221,10 @@ var render = function() {
   return _c(
     "div",
     {
-      ref: "companyFrameworkDialog",
+      ref: "companyWorkspaceDialog",
       staticClass: "mdc-dialog",
       attrs: {
-        id: "company-framework-dialog",
+        id: "company-workspace-dialog",
         role: "alertdialog",
         "aria-modal": "true",
         "aria-labelledby": "my-dialog-title",
@@ -58160,68 +58235,40 @@ var render = function() {
     [
       _c("div", { staticClass: "mdc-dialog__container" }, [
         _c("div", { staticClass: "mdc-dialog__surface" }, [
-          _c(
-            "h2",
-            {
-              staticClass: "mdc-dialog__title",
-              attrs: { id: "my-dialog-title" }
-            },
-            [_vm._v("Elegir empresa como entorno de trabajo")]
-          ),
+          _vm._m(0),
           _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "mdc-dialog__content",
-              attrs: { id: "my-dialog-content" }
-            },
-            [
-              _c(
-                "ul",
-                {
-                  staticClass: "mdc-list mdc-dialog__content",
-                  attrs: { role: "radiogroup", "data-mdc-auto-init": "MDCList" }
-                },
-                _vm._l(_vm.companies, function(company, index) {
-                  return _c(
-                    "li",
-                    {
-                      key: company.company_id,
-                      staticClass: "mdc-list-item",
-                      attrs: { role: "radio", "aria-checked": "false" }
-                    },
-                    [
-                      _c("span", { staticClass: "mdc-list-item__graphic" }, [
-                        _c("div", { staticClass: "mdc-radio" }, [
-                          _c("input", {
-                            staticClass: "mdc-radio__native-control",
-                            attrs: {
-                              type: "radio",
-                              id: "demo-list-radio-item-1",
-                              name: "demo-list-radio-item-group"
-                            },
-                            domProps: { value: company.company_id }
-                          }),
-                          _vm._v(" "),
-                          _vm._m(0, true)
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "label",
-                        {
-                          staticClass: "mdc-list-item__text",
-                          attrs: { for: "demo-list-radio-item-1" }
-                        },
-                        [_vm._v("Option 1")]
-                      )
-                    ]
-                  )
-                }),
-                0
-              )
-            ]
-          ),
+          _c("div", { staticClass: "mdc-list-divider" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "companies-list" }, [
+            _c(
+              "ul",
+              {
+                staticClass: "mdc-list",
+                attrs: { role: "listbox", "data-mdc-auto-init": "MDCList" }
+              },
+              _vm._l(_vm.companies, function(company, index) {
+                return _c(
+                  "li",
+                  {
+                    key: company.company_id,
+                    staticClass: "mdc-list-item",
+                    attrs: { role: "option", "aria-checked": "false" }
+                  },
+                  [
+                    _c("i", { staticClass: "material-icons" }, [
+                      _vm._v("business_center")
+                    ]),
+                    _c(
+                      "span",
+                      { staticClass: "mdc-list-item__text padding-left-24" },
+                      [_vm._v(_vm._s(company.company_name))]
+                    )
+                  ]
+                )
+              }),
+              0
+            )
+          ]),
           _vm._v(" "),
           _vm._m(1)
         ])
@@ -58236,11 +58283,28 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mdc-radio__background" }, [
-      _c("div", { staticClass: "mdc-radio__outer-circle" }),
-      _vm._v(" "),
-      _c("div", { staticClass: "mdc-radio__inner-circle" })
-    ])
+    return _c(
+      "div",
+      {
+        staticClass: "mdc-dialog__content",
+        attrs: { id: "my-dialog-content" }
+      },
+      [
+        _c("div", { attrs: { align: "center" } }, [
+          _c("i", { staticClass: "material-icons large-icon" }, [
+            _vm._v("business_center")
+          ]),
+          _vm._v(" "),
+          _c("h6", { staticClass: "mdc-typography--headline6 dialog-title" }, [
+            _vm._v("Comisión Federal de Electricidad")
+          ]),
+          _vm._v(" "),
+          _c("span", { staticClass: "mdc-typography--caption" }, [
+            _vm._v("Empresa actualmente en uso")
+          ])
+        ])
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -58254,15 +58318,6 @@ var staticRenderFns = [
           attrs: { type: "button", "data-mdc-dialog-action": "close" }
         },
         [_c("span", { staticClass: "mdc-button__label" }, [_vm._v("Cancelar")])]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "mdc-button mdc-dialog__button",
-          attrs: { type: "button", "data-mdc-dialog-action": "accept" }
-        },
-        [_c("span", { staticClass: "mdc-button__label" }, [_vm._v("Aceptar")])]
       )
     ])
   }
@@ -58559,7 +58614,7 @@ var render = function() {
                   "data-mdc-auto-init": "MDCRipple",
                   disabled: _vm.companies_number == 0
                 },
-                on: { click: _vm.openCompanyFrameworkDialog }
+                on: { click: _vm.openCompanyWorkspaceDialog }
               },
               [
                 _c("span", { staticClass: "mdc-button__label" }, [
@@ -58608,7 +58663,7 @@ var render = function() {
     _c(
       "div",
       { staticClass: "mdc-layout-grid__inner" },
-      _vm._l(_vm.companies, function(company, index) {
+      _vm._l(_vm.filteredCompanies, function(company, index) {
         return _c(
           "div",
           {
@@ -58711,46 +58766,44 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mdc-layout-grid" }, [
-      _c("div", { staticClass: "mdc-layout-grid__inner" }, [
-        _c("div", { staticClass: "mdc-layout-grid__cell--span-3" }),
-        _vm._v(" "),
-        _c("div", { staticClass: "mdc-layout-grid__cell--span-6" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "mdc-text-field mdc-text-field--fullwidth mdc-card mdc-text-field--with-trailing-icon mdc-text-field--no-label",
-              attrs: { "data-mdc-auto-init": "MDCTextField" }
-            },
-            [
-              _c("i", { staticClass: "material-icons mdc-text-field__icon" }, [
-                _vm._v("search")
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                staticClass: "mdc-text-field__input",
-                attrs: {
-                  id: "search_company_input",
-                  placeholder: "Buscar empresa"
+  return _c("div", { staticClass: "mdc-layout-grid" }, [
+    _c("div", { staticClass: "mdc-layout-grid__inner" }, [
+      _c("div", { staticClass: "mdc-layout-grid__cell--span-3" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "mdc-layout-grid__cell--span-6" }, [
+        _c(
+          "div",
+          {
+            staticClass:
+              "mdc-text-field mdc-text-field--fullwidth mdc-card mdc-text-field--with-trailing-icon mdc-text-field--no-label",
+            attrs: { "data-mdc-auto-init": "MDCTextField" }
+          },
+          [
+            _c("i", { staticClass: "material-icons mdc-text-field__icon" }, [
+              _vm._v("search")
+            ]),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "mdc-text-field__input",
+              attrs: {
+                id: "search_company_input",
+                placeholder: "Buscar empresa"
+              },
+              on: {
+                input: function($event) {
+                  return _vm.searchCompany($event.target.value)
                 }
-              }),
-              _vm._v(" "),
-              _c("div", { staticClass: "mdc-line-ripple" })
-            ]
-          )
-        ])
+              }
+            }),
+            _vm._v(" "),
+            _c("div", { staticClass: "mdc-line-ripple" })
+          ]
+        )
       ])
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -72354,7 +72407,7 @@ window.mdc = __webpack_require__(/*! material-components-web/dist/material-compo
 Vue.prototype.$eventBus = new Vue();
 Vue.component('navbar-component', __webpack_require__(/*! ./components/NavbarComponent.vue */ "./resources/js/components/NavbarComponent.vue")["default"]);
 Vue.component('drawer-component', __webpack_require__(/*! ./components/DrawerComponent.vue */ "./resources/js/components/DrawerComponent.vue")["default"]);
-Vue.component('company-framework-dialog-component', __webpack_require__(/*! ./components/CompanyFrameworkDialogComponent.vue */ "./resources/js/components/CompanyFrameworkDialogComponent.vue")["default"]); //Companies
+Vue.component('company-workspace-dialog-component', __webpack_require__(/*! ./components/CompanyWorkspaceDialogComponent.vue */ "./resources/js/components/CompanyWorkspaceDialogComponent.vue")["default"]); //Companies
 
 Vue.component('new-company-button-component', __webpack_require__(/*! ./components/companies/NewCompanyButtonComponent.vue */ "./resources/js/components/companies/NewCompanyButtonComponent.vue")["default"]);
 Vue.component('new-company-dialog-component', __webpack_require__(/*! ./components/companies/NewCompanyDialogComponent.vue */ "./resources/js/components/companies/NewCompanyDialogComponent.vue")["default"]);
@@ -72432,18 +72485,20 @@ if (token) {
 
 /***/ }),
 
-/***/ "./resources/js/components/CompanyFrameworkDialogComponent.vue":
+/***/ "./resources/js/components/CompanyWorkspaceDialogComponent.vue":
 /*!*********************************************************************!*\
-  !*** ./resources/js/components/CompanyFrameworkDialogComponent.vue ***!
+  !*** ./resources/js/components/CompanyWorkspaceDialogComponent.vue ***!
   \*********************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _CompanyFrameworkDialogComponent_vue_vue_type_template_id_45a7fcb9___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9& */ "./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9&");
-/* harmony import */ var _CompanyFrameworkDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _CompanyWorkspaceDialogComponent_vue_vue_type_template_id_2d65967c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c& */ "./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c&");
+/* harmony import */ var _CompanyWorkspaceDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _CompanyWorkspaceDialogComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -72451,10 +72506,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _CompanyFrameworkDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _CompanyFrameworkDialogComponent_vue_vue_type_template_id_45a7fcb9___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _CompanyFrameworkDialogComponent_vue_vue_type_template_id_45a7fcb9___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _CompanyWorkspaceDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CompanyWorkspaceDialogComponent_vue_vue_type_template_id_2d65967c___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CompanyWorkspaceDialogComponent_vue_vue_type_template_id_2d65967c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -72464,38 +72519,54 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/CompanyFrameworkDialogComponent.vue"
+component.options.__file = "resources/js/components/CompanyWorkspaceDialogComponent.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js&":
+/***/ "./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js&":
 /*!**********************************************************************************************!*\
-  !*** ./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js& ***!
+  !*** ./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js& ***!
   \**********************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyFrameworkDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyFrameworkDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9&":
+/***/ "./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css&":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c&":
 /*!****************************************************************************************************!*\
-  !*** ./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9& ***!
+  !*** ./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c& ***!
   \****************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyFrameworkDialogComponent_vue_vue_type_template_id_45a7fcb9___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyFrameworkDialogComponent.vue?vue&type=template&id=45a7fcb9&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyFrameworkDialogComponent_vue_vue_type_template_id_45a7fcb9___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_template_id_2d65967c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CompanyWorkspaceDialogComponent.vue?vue&type=template&id=2d65967c&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_template_id_2d65967c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyFrameworkDialogComponent_vue_vue_type_template_id_45a7fcb9___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CompanyWorkspaceDialogComponent_vue_vue_type_template_id_2d65967c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

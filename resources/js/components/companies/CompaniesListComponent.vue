@@ -1,7 +1,7 @@
 <template>
     <div class="mdc-layout-grid">
         <div class="mdc-layout-grid__inner">
-            <div v-for="(company,index) in companies" v-bind:key="company.company_id" class="mdc-layout-grid__cell--span-3 mdc-card">
+            <div v-for="(company, index) in filteredCompanies" v-bind:key="company.company_id" class="mdc-layout-grid__cell--span-3 mdc-card">
                 <div class="card-content">
                     <h5 class="card-title mdc-typography--headline5 mdc-theme--primary">{{company.company_name}}</h5>
                     <span class="rfc mdc-typography--subtitle2">{{company.company_rfc}}</span>
@@ -37,13 +37,14 @@
             axios.get('http://localhost:8000/companies')
             .then(response=>(this.companies)=response.data.companies)
             .catch(function (error) {
-              console.log(error);
+                console.log(error);
             });
         },
 
         data() {
             return {
-                companies: []
+                companies: [],
+                search: ''
             }
         },
 
@@ -68,6 +69,10 @@
             EventBus.$on('delete-company', data=>{
                 this.companies.splice(this.companies.indexOf(data),1);
             });
+
+            EventBus.$on('search-company', data=>{
+                this.search=data;
+            });
         },
 
         methods: {
@@ -77,6 +82,14 @@
 
             openUpdateCompanyDialog: function(company) {
                 EventBus.$emit('open-update-company-dialog', company);
+            }
+        },
+
+        computed: {
+            filteredCompanies: function() {
+                return this.companies.filter((company)=>{
+					return company.company_name.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+				});  
             }
         }
     }

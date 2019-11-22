@@ -196,8 +196,8 @@ svg.mdc-button__icon {
 
 .mdc-button--outlined {
   border-style: solid;
-  padding: 0 14px 0 14px;
-  border-width: 2px;
+  padding: 0 15px 0 15px;
+  border-width: 1px;
 }
 
 .mdc-button--outlined:disabled {
